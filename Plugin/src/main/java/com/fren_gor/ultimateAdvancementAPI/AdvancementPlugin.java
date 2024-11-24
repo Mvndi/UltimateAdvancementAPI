@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -111,17 +110,14 @@ public class AdvancementPlugin extends JavaPlugin {
         }
 
         if (configManager.getDisableVanillaAdvancements()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    try {
-                        AdvancementUtils.disableVanillaAdvancements();
-                    } catch (Exception e) {
-                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[UltimateAdvancementAPI] Couldn't disable vanilla advancements:");
-                        e.printStackTrace();
-                    }
+            scheduler.runTaskLater(() -> {
+                try {
+                    AdvancementUtils.disableVanillaAdvancements();
+                } catch (Exception e) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[UltimateAdvancementAPI] Couldn't disable vanilla advancements:");
+                    e.printStackTrace();
                 }
-            }.runTaskLater(this, 20);
+            }, 20L);
         }
 
         BStats.init(this);

@@ -23,6 +23,7 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.LazyValue;
 import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -33,7 +34,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -834,12 +834,12 @@ public final class AdvancementTab {
 
         private final Set<TeamProgression> advsToUpdate = new HashSet<>();
         private boolean scheduled = false;
-        private BukkitTask task;
+        private MyScheduledTask task;
 
         public void schedule(@NotNull TeamProgression progression) {
             if (!scheduled) {
                 scheduled = true;
-                task = Bukkit.getScheduler().runTaskLater(owningPlugin, this, 1L);
+                task = scheduler.runTaskLater(this, 1L);
             }
             advsToUpdate.add(progression);
         }
