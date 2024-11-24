@@ -35,9 +35,12 @@ public class AdvancementPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        instance = this;
-        scheduler = UniversalScheduler.getScheduler(this);
-        main = new AdvancementMain(this, scheduler);
+        if (instance == null)
+            instance = this;
+        if (scheduler == null)
+            scheduler = UniversalScheduler.getScheduler(this);
+        if (main == null)
+            main = new AdvancementMain(this, scheduler);
         try {
             main.load();
         } catch (InvalidVersionException e) {
@@ -70,6 +73,12 @@ public class AdvancementPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (instance == null)
+            instance = this;
+        if (scheduler == null)
+            scheduler = UniversalScheduler.getScheduler(this);
+        if (main == null)
+            main = new AdvancementMain(this, scheduler);
         if (!correctVersion) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
