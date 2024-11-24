@@ -5,6 +5,8 @@ import com.fren_gor.ultimateAdvancementAPI.commands.CommandAPIManager.ILoadable;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.InvalidVersionException;
 import com.fren_gor.ultimateAdvancementAPI.metrics.BStats;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -24,7 +26,7 @@ public class AdvancementPlugin extends JavaPlugin {
     private static final int RESOURCE_ID = 95585;
 
     private static AdvancementPlugin instance;
-
+    private static TaskScheduler scheduler;
     private AdvancementMain main;
     private ConfigManager configManager;
     private boolean correctVersion = true, commandsEnabled = false;
@@ -34,7 +36,8 @@ public class AdvancementPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        main = new AdvancementMain(this);
+        scheduler = UniversalScheduler.getScheduler(this);
+        main = new AdvancementMain(this, scheduler);
         try {
             main.load();
         } catch (InvalidVersionException e) {
@@ -134,23 +137,25 @@ public class AdvancementPlugin extends JavaPlugin {
     }
 
     private void checkForUpdates() {
-        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+        getScheduler().runTaskAsynchronously(() -> {
             try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + RESOURCE_ID).openStream();
                  Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNextLine()) {
                     if (!this.getDescription().getVersion().equalsIgnoreCase(scanner.next())) {
-                        AdvancementUtils.runSync(this, () -> {
+                        AdvancementUtils.runSync(this, scheduler, () -> {
                             getLogger().info("A new version of " + this.getDescription().getName() + " is out! Download it at https://www.spigotmc.org/resources/" + RESOURCE_ID);
                         });
                     }
                 }
             } catch (Exception e) {
-                AdvancementUtils.runSync(this, () -> {
+                AdvancementUtils.runSync(this, scheduler, () -> {
                     getLogger().info("Cannot look for updates: " + e.getMessage());
                 });
             }
         });
     }
+
+    public static TaskScheduler getScheduler() { return scheduler; }
 
     public static AdvancementPlugin getInstance() {
         return instance;
