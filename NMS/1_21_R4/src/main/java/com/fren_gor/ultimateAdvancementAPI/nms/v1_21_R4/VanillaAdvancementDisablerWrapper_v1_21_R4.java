@@ -137,7 +137,7 @@ public class VanillaAdvancementDisablerWrapper_v1_21_R4 extends VanillaAdvanceme
             listener.set(tree, old);
         }
 
-        final var removePacket = new ClientboundUpdateAdvancementsPacket(false, Collections.emptyList(), removed, Collections.emptyMap());
+        final var removePacket = new ClientboundUpdateAdvancementsPacket(false, Collections.emptyList(), removed, Collections.emptyMap(), false);
 
         // Remove advancements from players
         for (Player player : Bukkit.getOnlinePlayers()) {
