@@ -87,11 +87,13 @@ public final class CommandsCommon<Error extends Exception> {
     public void grantOne(CommandSender sender, Advancement advancement, Collection<Player> players, boolean giveRewards) throws Error {
         validatePlayerArgument(players);
         for (Player p : players) {
-            runSafely(sender, () -> {
+            boolean failed = runSafely(sender, () -> {
                 advancement.getAdvancementTab().showTab(p);
                 advancement.grant(p, giveRewards);
-                sender.sendMessage(ChatColor.GREEN + "Advancement " + ChatColor.YELLOW + advancement.getKey() + ChatColor.GREEN + " has been granted to " + ChatColor.YELLOW + p.getName());
             }, () -> "Could not grant advancement " + advancement + " to " + p.getName());
+            if (!failed) {
+                sender.sendMessage(ChatColor.GREEN + "Advancement " + ChatColor.YELLOW + advancement.getKey() + ChatColor.GREEN + " has been granted to " + ChatColor.YELLOW + p.getName());
+            }
         }
     }
 
@@ -155,10 +157,12 @@ public final class CommandsCommon<Error extends Exception> {
     public void revokeOne(CommandSender sender, Advancement advancement, Collection<Player> players) throws Error {
         validatePlayerArgument(players);
         for (Player p : players) {
-            runSafely(sender, () -> {
+            boolean failed = runSafely(sender, () -> {
                 advancement.revoke(p);
-                sender.sendMessage(ChatColor.GREEN + "Advancement " + ChatColor.YELLOW + advancement + ChatColor.GREEN + " has been revoked to " + ChatColor.YELLOW + p.getName());
             }, () -> "Could not revoke advancement " + advancement + " to " + p.getName());
+            if (!failed) {
+                sender.sendMessage(ChatColor.GREEN + "Advancement " + ChatColor.YELLOW + advancement + ChatColor.GREEN + " has been revoked to " + ChatColor.YELLOW + p.getName());
+            }
         }
     }
 
@@ -170,12 +174,14 @@ public final class CommandsCommon<Error extends Exception> {
         validatePlayerArgument(players);
         int[] progression = {0}; // Avoid lambda error
         for (Player p : players) {
-            runSafely(sender, () -> {
+            boolean failed = runSafely(sender, () -> {
                 progression[0] = advancement.getProgression(p);
-                sender.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " progression is " + ChatColor.YELLOW + progression[0] + '/' + advancement.getMaxProgression());
             }, () -> {
                 return "Could not get " + p.getName() + "'s progression of advancement " + advancement;
             });
+            if (!failed) {
+                sender.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " progression is " + ChatColor.YELLOW + progression[0] + '/' + advancement.getMaxProgression());
+            }
         }
         return progression[0];
     }
@@ -188,12 +194,14 @@ public final class CommandsCommon<Error extends Exception> {
         validatePlayerArgument(players);
         final int progr = Math.min(advancement.getMaxProgression(), progression);
         for (Player p : players) {
-            runSafely(sender, () -> {
+            boolean failed = runSafely(sender, () -> {
                 advancement.setProgression(p, progr, giveRewards);
-                sender.sendMessage(ChatColor.GREEN + "Progression of " + ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " has been set to " + ChatColor.YELLOW + progr + '/' + advancement.getMaxProgression());
             }, () -> {
                 return "Could not set " + p.getName() + "'s progression of advancement " + advancement + " to " + progr + '/' + advancement.getMaxProgression();
             });
+            if (!failed) {
+                sender.sendMessage(ChatColor.GREEN + "Progression of " + ChatColor.YELLOW + p.getName() + ChatColor.GREEN + " has been set to " + ChatColor.YELLOW + progr + '/' + advancement.getMaxProgression());
+            }
         }
     }
 
