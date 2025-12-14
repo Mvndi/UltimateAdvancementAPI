@@ -200,6 +200,7 @@ public final class CommandsCommon<Error extends Exception> {
     private boolean runSafely(CommandSender sender, Runnable action, Supplier<String> errorGenerator) {
         try {
             action.run();
+        } catch (UnsupportedOperationException ignored) {
         } catch (Exception e) {
             String error = errorGenerator.get();
             main.getLogger().log(Level.SEVERE, error, e);
