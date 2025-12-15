@@ -564,7 +564,7 @@ public abstract class Advancement {
         Preconditions.checkNotNull(player, "Player is null.");
 
         // Send complete messages
-        Boolean gameRule = player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
+        Boolean gameRule = player.getWorld().getGameRuleValue(AdvancementUtils.SHOW_ADVANCEMENT_MESSAGES_GAMERULE);
         if (display.doesAnnounceToChat() && (gameRule == null || gameRule)) {
             BaseComponent[] msg = getAnnounceMessage(player);
             if (msg != null)

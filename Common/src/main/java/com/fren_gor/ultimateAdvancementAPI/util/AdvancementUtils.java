@@ -21,6 +21,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -36,6 +37,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AdvancementUtils {
+
+    /**
+     * The {@code show_advancement_messages} game rule (previously called {@code announceAdvancements}).
+     */
+    public static final GameRule<Boolean> SHOW_ADVANCEMENT_MESSAGES_GAMERULE = getShowAdvancementMessagesGamerule();
 
     public static final MinecraftKeyWrapper ROOT_KEY, NOTIFICATION_KEY;
     private static final String ADV_DESCRIPTION = "\n§7A notification.";
@@ -289,6 +295,19 @@ public class AdvancementUtils {
     public static TeamProgression progressionFromUUID(@NotNull UUID uuid, @NotNull AdvancementTab tab) {
         Preconditions.checkNotNull(uuid, "UUID is null.");
         return tab.getDatabaseManager().getTeamProgression(uuid);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static GameRule<Boolean> getShowAdvancementMessagesGamerule() {
+        try {
+            // Spigot 1.21.11+
+            return (GameRule<Boolean>) GameRule.class.getDeclaredField("SHOW_ADVANCEMENT_MESSAGES").get(null);
+        } catch (NoSuchFieldException e) {
+            // Spigot <= 1.21.10, Paper all versions
+            return GameRule.ANNOUNCE_ADVANCEMENTS;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private AdvancementUtils() {
